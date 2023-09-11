@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[45]:
-
-
 import pandas as pd
 from Bio.SeqUtils import molecular_weight, MeltingTemp
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -125,51 +122,18 @@ for index, row in df.iterrows():
 feature_df = pd.DataFrame(feature_list)
 feature_df["label"] = df["label"]  # Add the "label" column from your dataset
 
-
-# In[44]:
-
-
 feature_df.isnull().any()
-
-
-# In[37]:
-
-
 feature_df[feature_df.isnull().any(axis=1)]
-
-
-# In[38]:
-
-
 feature_df.fillna(feature_df.mean(), inplace=True)
 feature_df[feature_df.isnull().any(axis=1)]
-
-
-# In[39]:
-
-
 df1 = feature_df.drop_duplicates(keep='first')
-
-
-# In[40]:
-
 
 # Exclude the "label" column before scaling
 columns_to_scale = df1.columns.difference(["label"])
-columns_to_scale
-
-
-# In[41]:
-
 
 # Apply Min-Max scaling to the selected columns
 scaler = MinMaxScaler()
 df1[columns_to_scale] = scaler.fit_transform(df1[columns_to_scale])
-df1
-
-
-# In[42]:
-
 
 # Save the DataFrame to a new CSV file with the calculated features
 #df1.to_csv("E:/R(4) Sajeeb Sir/Datasets/A.thaliana(PreProcessed).csv")
@@ -180,10 +144,3 @@ df1
 #df1.to_csv("E:/R(4) Sajeeb Sir/Datasets/G.pickeringi(PreProcessed).csv")
 #df1.to_csv("E:/R(4) Sajeeb Sir/Datasets/G.subterraneus(PreProcessed).csv")
 df1.to_csv("E:/R(4) Sajeeb Sir/Datasets/R_chinensis(PreProcessed).csv")
-
-
-# In[ ]:
-
-
-
-
