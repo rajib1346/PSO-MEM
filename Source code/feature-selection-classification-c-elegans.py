@@ -465,5 +465,6 @@ TP_TN_KNN_6= FP_FN_GB_5[FP_FN_GB_5['match']=='True']
 TP_TN_KNN_6=TP_TN_KNN_6.drop(['knn_pre','match'], axis=1)
 print("K Nearest Neighbor_TN_TP: ",len(TP_TN_KNN_6))
 
+#Total Accuracy
 print("Accuracy: ",(len(TP_TN_RF_1)+len(TP_TN_RF_2)+len(TP_TN_SVM_3)+len(TP_TN_GB_4)+
                     len(TP_TN_GB_5)+len(TP_TN_KNN_6)/len(X_test))
