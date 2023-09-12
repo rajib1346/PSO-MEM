@@ -313,7 +313,7 @@ else:
     train4 = pd.concat([train3, TP_TN_GB_3])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_3))
 
-#5th layeer
+#4th layeer
 random_forest=RandomForestClassifier(random_state=40)
 random_forest.fit(train4[feature_names[selected_features_rf]], train4['label'])
 rf_4=random_forest.predict(FP_FN_RF_3[feature_names[selected_features_rf]])
@@ -374,7 +374,7 @@ else:
     train5 = pd.concat([train4, TP_TN_GB_4])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_4))
 
-#6th layrr
+#5th layer
 random_forest=RandomForestClassifier(random_state=50)
 random_forest.fit(train5[feature_names[selected_features_rf]], train5['label'])
 rf_5=random_forest.predict(FP_FN_GB_4[feature_names[selected_features_rf]])
@@ -435,7 +435,7 @@ else:
     train6 = pd.concat([train5, TP_TN_GB_5])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_5))
 
-#7th layer
+#6th layer
 random_forest=RandomForestClassifier(random_state=60)
 random_forest.fit(train6[feature_names[selected_features_rf]], train6['label'])
 rf_6=random_forest.predict(FP_FN_RF_5[feature_names[selected_features_rf]])
@@ -496,7 +496,7 @@ else:
     train7 = pd.concat([train6, TP_TN_GB_6])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_6))
 
-#8th layer
+#7th layer
 random_forest=RandomForestClassifier(random_state=70)
 random_forest.fit(train7[feature_names[selected_features_rf]], train7['label'])
 rf_7=random_forest.predict(FP_FN_RF_6[feature_names[selected_features_rf]])
