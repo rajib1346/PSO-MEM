@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-pip install niapy
-
-
-# In[ ]:
-
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -26,30 +14,12 @@ y = dataset['label']
 X1 = X.to_numpy()
 y1 = y.to_numpy()
 
-
-# In[ ]:
-
-
 feature_names = dataset.columns
 feature_names = feature_names.to_numpy()
-feature_names
-
-
-# In[ ]:
-
-
 feature_names = feature_names[0:10]
 feature_names
 
-
-# In[ ]:
-
-
 X_train1, X_test1, y_train1, y_test1 = train_test_split(X1, y1, test_size=0.2, stratify=y, random_state=1234)
-
-
-# In[ ]:
-
 
 from sklearn.ensemble import RandomForestClassifier
 class Rf_FeatureSelection(Problem):
@@ -77,10 +47,6 @@ selected_features_rf = best_features_rf > 0.5
 print('Number of selected features for Random Forest:', selected_features_rf.sum())
 print('Selected features:', ', '.join(feature_names[selected_features_rf].tolist()))
 
-
-# In[ ]:
-
-
 from sklearn.ensemble import GradientBoostingClassifier
 class GB_FeatureSelection(Problem):
     def __init__(self, X_train, y_train, alpha=0.99):
@@ -106,10 +72,6 @@ best_features_gb, best_fitness_gb = algorithm.run(task)
 selected_features_gb = best_features_gb > 0.5
 print('Number of selected features for Gradient Boosting:', selected_features_gb.sum())
 print('Selected features:', ', '.join(feature_names[selected_features_gb].tolist()))
-
-
-# In[ ]:
-
 
 from sklearn.svm import SVC
 class SVM_FeatureSelection(Problem):
@@ -137,10 +99,6 @@ selected_features_svm = best_features_svm > 0.5
 print('Number of selected features for Support Vector Machine:', selected_features_svm.sum())
 print('Selected features:', ', '.join(feature_names[selected_features_svm].tolist()))
 
-
-# In[ ]:
-
-
 from sklearn.neighbors import KNeighborsClassifier
 class KNN_FeatureSelection(Problem):
     def __init__(self, X_train, y_train, alpha=0.99):
@@ -167,10 +125,7 @@ selected_features_knn = best_features_knn > 0.5
 print('Number of selected features for K Nearest Neighbor:', selected_features_knn.sum())
 print('Selected features:', ', '.join(feature_names[selected_features_knn].tolist()))
 
-
-# In[ ]:
-
-
+#1st layer
 random_forest=RandomForestClassifier(random_state=30)
 random_forest.fit(X_train1[:, selected_features_rf], y_train1)
 rf_1=random_forest.predict(X_test1[:, selected_features_rf])
@@ -186,17 +141,9 @@ Support_vector.fit(X_train1[:, selected_features_svm], y_train1)
 svm_1=Support_vector.predict(X_test1[:, selected_features_svm])
 acc_svm_1=metrics.accuracy_score(y_test1,svm_1)*100
 
-
-# In[ ]:
-
-
 X_train = pd.DataFrame(X_train1, columns=X.columns)
 X_train['label'] = y_train1
 X_test = pd.DataFrame(X_test1, columns=X.columns)
-
-
-# In[ ]:
-
 
 if acc_rf_1 >= acc_svm_1 and acc_rf_1 >= acc_gb_1 :
     X_test['label'] = y_test1
@@ -242,10 +189,7 @@ else:
     train2 = pd.concat([X_train, TP_TN_GB_1])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_1))
 
-
-# In[ ]:
-
-
+#2nd layer
 random_forest=RandomForestClassifier(random_state=30)
 random_forest.fit(train2[feature_names[selected_features_rf]], train2['label'])
 rf_2=random_forest.predict(FP_FN_SVM_1[feature_names[selected_features_rf]])
@@ -260,10 +204,6 @@ Support_vector = SVC()
 Support_vector.fit(train2[feature_names[selected_features_svm]], train2['label'])
 svm_2=Support_vector.predict(FP_FN_SVM_1[feature_names[selected_features_svm]])
 acc_svm_2=metrics.accuracy_score(FP_FN_SVM_1['label'],svm_2)*100
-
-
-# In[ ]:
-
 
 if acc_rf_2 >= acc_svm_2 and acc_rf_2 >= acc_gb_2 :
     FP_FN_SVM_1['label'] = FP_FN_SVM_1['label']
@@ -310,10 +250,7 @@ else:
     train3 = pd.concat([train2, TP_TN_GB_2])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_2))
 
-
-# In[ ]:
-
-
+#3rd layer
 random_forest=RandomForestClassifier(random_state=30)
 random_forest.fit(train3[feature_names[selected_features_rf]], train3['label'])
 rf_3=random_forest.predict(FP_FN_RF_2[feature_names[selected_features_rf]])
@@ -328,10 +265,6 @@ Support_vector = SVC()
 Support_vector.fit(train3[feature_names[selected_features_svm]], train3['label'])
 svm_3=Support_vector.predict(FP_FN_RF_2[feature_names[selected_features_svm]])
 acc_svm_3=metrics.accuracy_score(FP_FN_RF_2['label'],svm_3)*100
-
-
-# In[ ]:
-
 
 if acc_rf_3 >= acc_svm_3 and acc_rf_3 >= acc_gb_3 :
     FP_FN_RF_2['label'] = FP_FN_RF_2['label']
@@ -378,10 +311,7 @@ else:
     train4 = pd.concat([train3, TP_TN_GB_3])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_3))
 
-
-# In[ ]:
-
-
+#4th layer
 random_forest=RandomForestClassifier(random_state=40)
 random_forest.fit(train4[feature_names[selected_features_rf]], train4['label'])
 rf_4=random_forest.predict(FP_FN_GB_3[feature_names[selected_features_rf]])
@@ -396,10 +326,6 @@ Support_vector = SVC()
 Support_vector.fit(train4[feature_names[selected_features_svm]], train4['label'])
 svm_4=Support_vector.predict(FP_FN_GB_3[feature_names[selected_features_svm]])
 acc_svm_4=metrics.accuracy_score(FP_FN_GB_3['label'],svm_4)*100
-
-
-# In[ ]:
-
 
 if acc_rf_4 >= acc_svm_4 and acc_rf_4 >= acc_gb_4 :
     FP_FN_GB_3['label'] = FP_FN_GB_3['label']
@@ -446,10 +372,7 @@ else:
     train5 = pd.concat([train4, TP_TN_GB_4])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_4))
 
-
-# In[ ]:
-
-
+#5th layer
 random_forest=RandomForestClassifier(random_state=50)
 random_forest.fit(train5[feature_names[selected_features_rf]], train5['label'])
 rf_5=random_forest.predict(FP_FN_GB_4[feature_names[selected_features_rf]])
@@ -464,10 +387,6 @@ Support_vector = SVC()
 Support_vector.fit(train5[feature_names[selected_features_svm]], train5['label'])
 svm_5=Support_vector.predict(FP_FN_GB_4[feature_names[selected_features_svm]])
 acc_svm_5=metrics.accuracy_score(FP_FN_GB_4['label'],svm_5)*100
-
-
-# In[ ]:
-
 
 if acc_rf_5 >= acc_svm_5 and acc_rf_5 >= acc_gb_5 :
     FP_FN_GB_4['label'] = FP_FN_GB_4['label']
@@ -514,10 +433,7 @@ else:
     train6 = pd.concat([train5, TP_TN_GB_5])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_5))
 
-
-# In[ ]:
-
-
+#6th layer
 random_forest=RandomForestClassifier(random_state=60)
 random_forest.fit(train6[feature_names[selected_features_rf]], train6['label'])
 rf_6=random_forest.predict(FP_FN_SVM_5[feature_names[selected_features_rf]])
@@ -532,10 +448,6 @@ Support_vector = SVC()
 Support_vector.fit(train6[feature_names[selected_features_svm]], train6['label'])
 svm_6=Support_vector.predict(FP_FN_SVM_5[feature_names[selected_features_svm]])
 acc_svm_6=metrics.accuracy_score(FP_FN_SVM_5['label'],svm_6)*10
-
-
-# In[ ]:
-
 
 if acc_rf_6 >= acc_svm_6 and acc_rf_6 >= acc_gb_6 :
     FP_FN_SVM_5['label'] = FP_FN_SVM_5['label']
@@ -582,10 +494,7 @@ else:
     train7 = pd.concat([train6, TP_TN_GB_6])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_6))
 
-
-# In[ ]:
-
-
+#7th layer
 random_forest=RandomForestClassifier(random_state=70)
 random_forest.fit(train7[feature_names[selected_features_rf]], train7['label'])
 rf_7=random_forest.predict(FP_FN_RF_6[feature_names[selected_features_rf]])
@@ -600,10 +509,6 @@ Support_vector = SVC()
 Support_vector.fit(train7[feature_names[selected_features_svm]], train7['label'])
 svm_7=Support_vector.predict(FP_FN_RF_6[feature_names[selected_features_svm]])
 acc_svm_7=metrics.accuracy_score(FP_FN_RF_6['label'],svm_7)*100
-
-
-# In[ ]:
-
 
 if acc_rf_7 >= acc_svm_7 and acc_rf_7 >= acc_gb_7 :
     FP_FN_RF_6['label'] = FP_FN_RF_6['label']
@@ -650,10 +555,7 @@ else:
     train8 = pd.concat([train7, TP_TN_GB_7])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_7))
 
-
-# In[ ]:
-
-
+#8th layer
 random_forest=RandomForestClassifier(random_state=80)
 random_forest.fit(train8[feature_names[selected_features_rf]], train8['label'])
 rf_8=random_forest.predict(FP_FN_RF_7[feature_names[selected_features_rf]])
@@ -668,10 +570,6 @@ Support_vector = SVC()
 Support_vector.fit(train8[feature_names[selected_features_svm]], train8['label'])
 svm_8=Support_vector.predict(FP_FN_RF_7[feature_names[selected_features_svm]])
 acc_svm_8=metrics.accuracy_score(FP_FN_RF_7['label'],svm_8)*100
-
-
-# In[ ]:
-
 
 if acc_rf_8 >= acc_svm_8 and acc_rf_8 >= acc_gb_8 :
     FP_FN_RF_7['label'] = FP_FN_RF_7['label']
@@ -718,10 +616,7 @@ else:
     train9 = pd.concat([train8, TP_TN_GB_8])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_8))
 
-
-# In[ ]:
-
-
+#9th layer
 random_forest=RandomForestClassifier(random_state=90)
 random_forest.fit(train9[feature_names[selected_features_rf]], train9['label'])
 rf_9=random_forest.predict(FP_FN_GB_8[feature_names[selected_features_rf]])
@@ -736,10 +631,6 @@ Support_vector = SVC()
 Support_vector.fit(train9[feature_names[selected_features_svm]], train9['label'])
 svm_9=Support_vector.predict(FP_FN_GB_8[feature_names[selected_features_svm]])
 acc_svm_9=metrics.accuracy_score(FP_FN_GB_8['label'],svm_9)*100
-
-
-# In[ ]:
-
 
 if acc_rf_9 >= acc_svm_9 and acc_rf_9 >= acc_gb_9 :
     FP_FN_GB_8['label'] = FP_FN_GB_8['label']
@@ -786,10 +677,7 @@ else:
     train10 = pd.concat([train9, TP_TN_GB_9])
     print("Gradient_Boosting_TN_TP: ",len(TP_TN_GB_9))
 
-
-# In[ ]:
-
-
+#10th layer
 random_forest=RandomForestClassifier(random_state=100)
 random_forest.fit(train10[feature_names[selected_features_rf]], train10['label'])
 rf_10=random_forest.predict(FP_FN_SVM_9[feature_names[selected_features_rf]])
@@ -805,19 +693,11 @@ Support_vector.fit(train10[feature_names[selected_features_svm]], train10['label
 svm_10=Support_vector.predict(FP_FN_SVM_9[feature_names[selected_features_svm]])
 acc_svm_10=metrics.accuracy_score(FP_FN_SVM_9['label'],svm_10)*100
 
-
-# In[ ]:
-
-
 from sklearn.neighbors import KNeighborsClassifier
 knn=KNeighborsClassifier(n_neighbors=7)
 knn.fit(train10[feature_names[selected_features_knn]], train10['label'])
 knn_10=knn.predict(FP_FN_SVM_9[feature_names[selected_features_knn]])
 acc_knn_10=metrics.accuracy_score(FP_FN_SVM_9['label'],knn_10)*100
-
-
-# In[ ]:
-
 
 FP_FN_SVM_9['label'] = FP_FN_SVM_9['label']
 FP_FN_SVM_9['knn_pre']=knn_10
@@ -831,10 +711,7 @@ TP_TN_KNN_10= FP_FN_SVM_9[FP_FN_SVM_9['match']=='True']
 TP_TN_KNN_10=TP_TN_KNN_10.drop(['knn_pre','match'], axis=1)
 print("K Nearest Neighbor_TN_TP: ",len(TP_TN_KNN_10))
 
-
-# In[ ]:
-
-
+#Total Accuracy
 print("Accuracy: ",(len(TP_TN_SVM_1)+len(TP_TN_RF_2)+len(TP_TN_GB_3)+len(TP_TN_GB_4)+
                     len(TP_TN_SVM_5)+len(TP_TN_RF_6)+len(TP_TN_RF_7)+len(TP_TN_GB_8))+
                     len(TP_TN_SVM_9)+len(TP_TN_KNN_10) /len(X_test))
